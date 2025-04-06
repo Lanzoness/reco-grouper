@@ -3,14 +3,13 @@ import Slider from '@react-native-community/slider';
 import { useState } from 'react';
 
 export default function Index() {
-  const [seatCount, setSeatCount] = useState(20); // Default to 20 as in the image
+  const [seatCount, setSeatCount] = useState(20);
   const [groupCount, setGroupCount] = useState(5);
   const [side, setSide] = useState('l');
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <Text style={styles.baseText}>Recollection Groupings Tool</Text>
         <Text>Number of Seats: {seatCount}</Text>
         <Slider
           style={{width: 400, height: 40}}
@@ -56,7 +55,7 @@ export default function Index() {
 }
 
 const calculateSeatsContainerHeight = (seatCount: number) => {
-  const topRowWidth = 8;
+  const topRowWidth = 10; // Increased topRowWidth to 10
   if (seatCount <= topRowWidth) {
     return { height: 40 };
   } else {
@@ -67,11 +66,12 @@ const calculateSeatsContainerHeight = (seatCount: number) => {
 
 const displaySeat = (seatCount: number, groupCount: number, side: string) => {
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080'];
-  const topRowWidth = 8;
+  const topRowWidth = 10; // Increased topRowWidth to 10 - consistent with calculateSeatsContainerHeight
   const sideColumnHeight = Math.floor((seatCount - topRowWidth) / 2);
   const isEvenLayout = (seatCount - topRowWidth) % 2 === 0;
 
   let seatCounter = 1;
+  const horizontalOffset = 40; // Added horizontal offset for centering
 
   return Array.from({ length: seatCount }, (_, index) => {
     let row = 0;
@@ -98,13 +98,13 @@ const displaySeat = (seatCount: number, groupCount: number, side: string) => {
       return null;
     }
 
-    let colorIndex = (seatNumber - 1) % groupCount; // Color is always sequential for 'l'
+    let colorIndex = (seatNumber - 1) % groupCount;
 
-    let displaySeatNumber = seatNumber; // Default display number is the sequential seatNumber
+    let displaySeatNumber = seatNumber;
 
     if (side === 'r') {
-      displaySeatNumber = seatCount - seatNumber + 1; // Reverse numbering for 'r' side
-      colorIndex = (groupCount - 1 - ((seatNumber - 1) % groupCount)); // Keep reversed color for 'r' side as before, or remove if you want sequential color for reversed numbering.
+      displaySeatNumber = seatCount - seatNumber + 1;
+      colorIndex = (groupCount - 1 - ((seatNumber - 1) % groupCount));
     }
 
 
@@ -116,7 +116,7 @@ const displaySeat = (seatCount: number, groupCount: number, side: string) => {
           { backgroundColor: colors[colorIndex] },
           {
             position: 'absolute',
-            left: col * 40,
+            left: col * 40 + horizontalOffset, // Added horizontalOffset here
             top: row * 40,
           }
         ]}
@@ -164,9 +164,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   seatsContainer: {
-    width: 400,
+    width: 480, // Increased seatsContainer width to 480
     position: 'relative',
-    marginTop: 20,
+    marginTop: 10,
+    alignSelf: 'center',
     backgroundColor: '#F0F0F0',
   },
   seat: {
