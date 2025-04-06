@@ -3,20 +3,33 @@ import Slider from '@react-native-community/slider';
 import { useState } from 'react';
 
 export default function Index() {
-  const [value, setValue] = useState(1);
+  const [seatCount, setSeatCount] = useState(1);
+  const [groupCount, setGroupCount] = useState(1);
+  const [side, setSide] = useState('l');
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         <Text style={styles.baseText}>Recollection Groupings Tool</Text>
-        <Text>Number of Seats: {value}</Text>
+        <Text>Number of Seats: {seatCount}</Text>
         <Slider
-          style={styles.slider}
+          style={{width: 400, height: 40}}
           minimumValue={1}
           maximumValue={40}
           step={1}
-          value={value}
-          onValueChange={setValue}
+          value={seatCount}
+          onValueChange={setSeatCount}
+          minimumTrackTintColor="#FFFFFF"
+          maximumTrackTintColor="#000000"
+        />
+        <Text>Number of Groups: {groupCount}</Text>
+        <Slider
+          style={{width: 200, height: 40}}
+          minimumValue={2}
+          maximumValue={5}
+          step={1}
+          value={groupCount}
+          onValueChange={setGroupCount}
           minimumTrackTintColor="#FFFFFF"
           maximumTrackTintColor="#000000"
         />
@@ -37,9 +50,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 32,
-  },
-  slider: {
-    width: 400, 
-    height: 40,
   },
 });
