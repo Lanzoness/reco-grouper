@@ -3,8 +3,8 @@ import Slider from '@react-native-community/slider';
 import { useState } from 'react';
 
 export default function Index() {
-  const [seatCount, setSeatCount] = useState(14); // Default to 14 as in the image
-  const [groupCount, setGroupCount] = useState(5); // Default to 5 as in the image
+  const [seatCount, setSeatCount] = useState(20); // Default to 20 as in the image
+  const [groupCount, setGroupCount] = useState(5);
   const [side, setSide] = useState('l');
 
   return (
@@ -65,14 +65,13 @@ const calculateSeatsContainerHeight = (seatCount: number) => {
   }
 };
 
-
 const displaySeat = (seatCount: number, groupCount: number, side: string) => {
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080'];
   const topRowWidth = 8;
   const sideColumnHeight = Math.floor((seatCount - topRowWidth) / 2);
   const isEvenLayout = (seatCount - topRowWidth) % 2 === 0;
 
-  let seatCounter = 1; // Start seat counter from 1
+  let seatCounter = 1;
 
   return Array.from({ length: seatCount }, (_, index) => {
     let row = 0;
@@ -83,29 +82,30 @@ const displaySeat = (seatCount: number, groupCount: number, side: string) => {
       row = 0;
       col = index;
       seatNumber = seatCounter++;
-    }
-    else if (index < sideColumnHeight) {
-      // Left side column (Top to Bottom)
-      row = index; // row increases downwards
+    } else if (index < sideColumnHeight) {
+      row = index;
       col = 0;
       seatNumber = seatCounter++;
     } else if (index < sideColumnHeight + topRowWidth) {
-      // Bottom row (Left to Right)
       row = sideColumnHeight;
-      col = index - sideColumnHeight; // col increases to right
+      col = index - sideColumnHeight;
       seatNumber = seatCounter++;
     } else if (index < seatCount) {
-      // Right side column (Bottom to Top)
-      row = sideColumnHeight - 1 - (index - (sideColumnHeight + topRowWidth)); // row decreases upwards
+      row = sideColumnHeight - 1 - (index - (sideColumnHeight + topRowWidth));
       col = topRowWidth - 1;
       seatNumber = seatCounter++;
     } else {
       return null;
     }
 
-    const colorIndex = side === 'l'
-      ? (seatNumber - 1) % groupCount // Color from 0-indexed seatNumber
-      : (groupCount - 1 - ((seatNumber - 1) % groupCount)); // Reversed for 'r' side
+    let colorIndex = (seatNumber - 1) % groupCount; // Color is always sequential for 'l'
+
+    let displaySeatNumber = seatNumber; // Default display number is the sequential seatNumber
+
+    if (side === 'r') {
+      displaySeatNumber = seatCount - seatNumber + 1; // Reverse numbering for 'r' side
+      colorIndex = (groupCount - 1 - ((seatNumber - 1) % groupCount)); // Keep reversed color for 'r' side as before, or remove if you want sequential color for reversed numbering.
+    }
 
 
     return (
@@ -122,7 +122,7 @@ const displaySeat = (seatCount: number, groupCount: number, side: string) => {
         ]}
       >
         <Text style={styles.seatNumber}>
-          {seatNumber}
+          {displaySeatNumber}
         </Text>
       </View>
     );
