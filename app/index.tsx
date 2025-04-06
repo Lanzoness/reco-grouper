@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Slider from '@react-native-community/slider';
 import { useState } from 'react';
 
@@ -33,17 +33,33 @@ export default function Index() {
           minimumTrackTintColor="#FFFFFF"
           maximumTrackTintColor="#000000"
         />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Left</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Right</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.seatsContainer}>
-          {displaySeat(seatCount)}
+          {displaySeat(seatCount, groupCount)}
         </View>
       </ScrollView>
     </View>
   );
 }
 
-const displaySeat = (seatCount: number) => {
+const displaySeat = (seatCount: number, groupCount: number) => {
+  const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080']; // Red, Green, Blue, Orange, Purple
+  
   return Array.from({ length: seatCount }, (_, index) => (
-    <View key={index} style={styles.seat} />
+    <View 
+      key={index} 
+      style={[
+        styles.seat, 
+        { backgroundColor: colors[index % groupCount] }
+      ]} 
+    />
   ));
 }
 
@@ -60,6 +76,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 32,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 20,
+    marginTop: 10,
+  },
+  button: {
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#000000',
+  },
+  buttonText: {
+    fontSize: 16,
+  },
   seatsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -70,7 +101,6 @@ const styles = StyleSheet.create({
   seat: {
     width: 30,
     height: 30,
-    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#000000',
   },
