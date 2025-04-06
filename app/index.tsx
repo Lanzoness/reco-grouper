@@ -34,33 +34,45 @@ export default function Index() {
           maximumTrackTintColor="#000000"
         />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity 
+            style={[styles.button, side === 'l' && styles.activeButton]} 
+            onPress={() => setSide('l')}
+          >
             <Text style={styles.buttonText}>Left</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity 
+            style={[styles.button, side === 'r' && styles.activeButton]} 
+            onPress={() => setSide('r')}
+          >
             <Text style={styles.buttonText}>Right</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.seatsContainer}>
-          {displaySeat(seatCount, groupCount)}
+          {displaySeat(seatCount, groupCount, side)}
         </View>
       </ScrollView>
     </View>
   );
 }
 
-const displaySeat = (seatCount: number, groupCount: number) => {
+const displaySeat = (seatCount: number, groupCount: number, side: string) => {
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080']; // Red, Green, Blue, Orange, Purple
   
-  return Array.from({ length: seatCount }, (_, index) => (
-    <View 
-      key={index} 
-      style={[
-        styles.seat, 
-        { backgroundColor: colors[index % groupCount] }
-      ]} 
-    />
-  ));
+  return Array.from({ length: seatCount }, (_, index) => {
+    const colorIndex = side === 'l' 
+      ? index % groupCount 
+      : (seatCount - 1 - index) % groupCount;
+    
+    return (
+      <View 
+        key={index} 
+        style={[
+          styles.seat, 
+          { backgroundColor: colors[colorIndex] }
+        ]} 
+      />
+    );
+  });
 }
 
 const styles = StyleSheet.create({
@@ -87,6 +99,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#000000',
+  },
+  activeButton: {
+    backgroundColor: '#CCCCCC',
   },
   buttonText: {
     fontSize: 16,
