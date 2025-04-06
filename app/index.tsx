@@ -3,7 +3,7 @@ import Slider from '@react-native-community/slider';
 import { useState } from 'react';
 
 export default function Index() {
-  const [seatCount, setSeatCount] = useState(19); // Default to 19 as in the image
+  const [seatCount, setSeatCount] = useState(14); // Default to 14 as in the image
   const [groupCount, setGroupCount] = useState(5); // Default to 5 as in the image
   const [side, setSide] = useState('l');
 
@@ -47,7 +47,7 @@ export default function Index() {
             <Text style={styles.buttonText}>Right</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.seatsContainer}>
+        <View style={[styles.seatsContainer, calculateSeatsContainerHeight(seatCount)]}>
           {displaySeat(seatCount, groupCount, side)}
         </View>
       </ScrollView>
@@ -55,37 +55,57 @@ export default function Index() {
   );
 }
 
+const calculateSeatsContainerHeight = (seatCount: number) => {
+  const topRowWidth = 8;
+  if (seatCount <= topRowWidth) {
+    return { height: 40 };
+  } else {
+    const sideColumnHeight = Math.floor((seatCount - topRowWidth) / 2);
+    return { height: (sideColumnHeight + 1) * 40 };
+  }
+};
+
+
 const displaySeat = (seatCount: number, groupCount: number, side: string) => {
-  const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080']; // Red, Green, Blue, Orange, Purple
-
-  const topRowWidth = 8; // Fixed top row width as per image
+  const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080'];
+  const topRowWidth = 8;
   const sideColumnHeight = Math.floor((seatCount - topRowWidth) / 2);
-  const remainingSeatsForRight = seatCount - topRowWidth - sideColumnHeight;
+  const isEvenLayout = (seatCount - topRowWidth) % 2 === 0;
 
+  let seatCounter = 1; // Start seat counter from 1
 
   return Array.from({ length: seatCount }, (_, index) => {
-    const colorIndex = side === 'l'
-      ? index % groupCount
-      : (seatCount - 1 - index) % groupCount;
-
     let row = 0;
     let col = 0;
+    let seatNumber = 0;
 
-    if (index < sideColumnHeight) {
-      // Left side column
-      row = sideColumnHeight - 1 - index; // Go upwards
-      col = 0;
-    } else if (index < sideColumnHeight + topRowWidth) {
-      // Bottom row
-      row = sideColumnHeight;
-      col = index - sideColumnHeight;
-    } else if (index < seatCount) {
-      // Right side column
-      row = sideColumnHeight - 1 - (index - (sideColumnHeight + topRowWidth)); // Go upwards, starting from same top as left
-      col = topRowWidth - 1;
-    } else {
-      return null; // Should not reach here, but for safety
+    if (seatCount <= topRowWidth) {
+      row = 0;
+      col = index;
+      seatNumber = seatCounter++;
     }
+    else if (index < sideColumnHeight) {
+      // Left side column (Top to Bottom)
+      row = index; // row increases downwards
+      col = 0;
+      seatNumber = seatCounter++;
+    } else if (index < sideColumnHeight + topRowWidth) {
+      // Bottom row (Left to Right)
+      row = sideColumnHeight;
+      col = index - sideColumnHeight; // col increases to right
+      seatNumber = seatCounter++;
+    } else if (index < seatCount) {
+      // Right side column (Bottom to Top)
+      row = sideColumnHeight - 1 - (index - (sideColumnHeight + topRowWidth)); // row decreases upwards
+      col = topRowWidth - 1;
+      seatNumber = seatCounter++;
+    } else {
+      return null;
+    }
+
+    const colorIndex = side === 'l'
+      ? (seatNumber - 1) % groupCount // Color from 0-indexed seatNumber
+      : (groupCount - 1 - ((seatNumber - 1) % groupCount)); // Reversed for 'r' side
 
 
     return (
@@ -96,14 +116,18 @@ const displaySeat = (seatCount: number, groupCount: number, side: string) => {
           { backgroundColor: colors[colorIndex] },
           {
             position: 'absolute',
-            left: col * 40, // 40 = seat width (30) + gap (10)
+            left: col * 40,
             top: row * 40,
           }
         ]}
-      />
+      >
+        <Text style={styles.seatNumber}>
+          {seatNumber}
+        </Text>
+      </View>
     );
-  }).filter(Boolean); // Filter out null elements if any
-}
+  }).filter(Boolean);
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -112,18 +136,19 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20, // Add some padding at the top and bottom
+    paddingVertical: 20,
   },
   baseText: {
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 32,
-    marginBottom: 20, // Add margin below the title
+    marginBottom: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
     gap: 20,
     marginTop: 10,
+    marginBottom: 30,
   },
   button: {
     backgroundColor: '#FFFFFF',
@@ -140,15 +165,20 @@ const styles = StyleSheet.create({
   },
   seatsContainer: {
     width: 400,
-    height: 400,
     position: 'relative',
     marginTop: 20,
-    backgroundColor: '#F0F0F0', // Adding background to see the container
+    backgroundColor: '#F0F0F0',
   },
   seat: {
     width: 30,
     height: 30,
     borderWidth: 1,
     borderColor: '#000000',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+  seatNumber: {
+    color: 'white',
+    fontWeight: 'bold',
+  }
 });
