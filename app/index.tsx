@@ -33,9 +33,18 @@ export default function Index() {
           minimumTrackTintColor="#FFFFFF"
           maximumTrackTintColor="#000000"
         />
+        <View style={styles.seatsContainer}>
+          {displaySeat(seatCount)}
+        </View>
       </ScrollView>
     </View>
   );
+}
+
+const displaySeat = (seatCount: number) => {
+  return Array.from({ length: seatCount }, (_, index) => (
+    <View key={index} style={styles.seat} />
+  ));
 }
 
 const styles = StyleSheet.create({
@@ -50,5 +59,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 32,
+  },
+  seatsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 20,
+  },
+  seat: {
+    width: 30,
+    height: 30,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#000000',
   },
 });
